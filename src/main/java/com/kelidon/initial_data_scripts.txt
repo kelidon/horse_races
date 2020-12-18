@@ -1,0 +1,153 @@
+drop table horse_owner;
+drop table horse_rider;
+drop table results;
+drop table competitions;
+drop table horses;
+drop table owners;
+drop table riders;
+
+create table competitions
+(
+    id            serial not null
+        constraint competitions_pk
+            primary key,
+    name          text   not null,
+    date          date,
+    time          time,
+    place         text,
+    riders_number integer
+);
+
+alter table competitions
+    owner to postgres;
+
+create table horses
+(
+    id      serial not null
+        constraint horses_pk
+            primary key,
+    name    text   not null,
+    is_male boolean,
+    age     integer
+);
+
+alter table horses
+    owner to postgres;
+
+create unique index horses_id_uindex
+    on horses (id);
+
+create table owners
+(
+    id      serial not null
+        constraint owners_pk
+            primary key,
+    name    text   not null,
+    address text
+);
+
+alter table owners
+    owner to postgres;
+
+create unique index owners_id_uindex
+    on owners (id);
+
+create table riders
+(
+    id     serial not null
+        constraint riders_pk
+            primary key,
+    name   text   not null,
+    age    integer,
+    height integer,
+    weight integer
+);
+
+alter table riders
+    owner to postgres;
+
+create table results
+(
+    id             serial not null
+        constraint results_pk
+            primary key,
+    competition_id integer
+        constraint results_competitions_id_fk
+            references competitions,
+    horse_id       integer
+        constraint results_horses_id_fk
+            references horses,
+    horse_result   integer
+);
+
+alter table results
+    owner to postgres;
+
+create unique index results_id_uindex
+    on results (id);
+
+create table horse_rider
+(
+    horse_id integer not null
+        constraint horse_rider_pk
+            primary key
+        constraint horse_rider_horses_id_fk
+            references horses,
+    rider_id integer not null
+        constraint horse_rider_riders_id_fk
+            references riders
+);
+
+alter table horse_rider
+    owner to postgres;
+
+create unique index horse_rider_horse_id_uindex
+    on horse_rider (horse_id);
+
+create table horse_owner
+(
+    horse_id integer not null
+        constraint horse_owner_pk
+            primary key
+        constraint horse_owner_horses_id_fk
+            references horses,
+    owner_id integer not null
+        constraint horse_owner_owners_id_fk
+            references owners
+);
+
+alter table horse_owner
+    owner to postgres;
+
+create unique index horse_owner_horse_id_uindex
+    on horse_owner (horse_id);
+
+
+insert into horses values (0,'Binki',false, 13);
+insert into horses values (1,'Phe plotva', false, 15);
+insert into horses values (2,'Captain', true, 20);
+
+insert into owners values(0, 'Jauhen', 'Flash street, 10');
+insert into owners values(1, 'Viktar', 'Lambda street, 3');
+
+insert into riders values(0, 'Timon', 23, 180, 79);
+insert into riders values(1, 'Pumba', 21, 193, 83);
+insert into riders values(2, 'Lion', 18, 178, 70);
+
+insert into competitions values(0, 'Buffalo Cup', '20-12-2020', '19:00', 'Buffalo Center',3);
+insert into competitions values(1, 'Duel Championship', '23-12-2020', '20:00', 'Rally Arena', 2);
+
+insert into horse_owner values(0, 0);
+insert into horse_owner values(2, 0);
+insert into horse_owner values(1, 1);
+
+insert into horse_rider values(0, 0);
+insert into horse_rider values(1, 0);
+insert into horse_rider values(2, 2);
+
+insert into results values(0, 0, 0, 3);
+insert into results values(1, 0, 1, 1);
+insert into results values(2, 0, 2, 2);
+
+insert into results values(3, 1, 0, 2);
+insert into results values(4, 1, 1, 1);
